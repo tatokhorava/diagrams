@@ -1,0 +1,26 @@
+@startuml
+actor Landmark.User
+participant Landmark.PendingTables
+participant Landmark.Intelligence
+participant MessageBroker
+participant GamePlan.Intelligence
+participant GamePlan.Api
+database GamePlan.DataBase
+
+Landmark.User -> Landmark.Intelligence: Start
+Landmark.Intelligence -> Landmark.PendingTables: Get data
+Landmark.Intelligence -> MessageBroker: Publish/Send Messages
+GamePlan.Intelligence <- MessageBroker: Consuming data
+note right of MessageBroker
+Actually intelligence 
+is consuming message as
+they arrive to the broker
+end note
+GamePlan.Intelligence <-> GamePlan.Api: Check if Run in progress
+' if (condition A) then (yes)
+'   Landmark.User -> Landmark.Intelligence: Start
+' else (nothing)
+'   Landmark.User -> Landmark.Intelligence: Start
+' endif
+
+@enduml
