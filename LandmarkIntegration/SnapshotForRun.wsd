@@ -36,15 +36,16 @@ end note
 AirtimeManager -> GamePlan.Api: Start Run
 GamePlan.Api -> GamePlan.Intelligence.Api: Check if import in progress
 GamePlan.Intelligence.Api -> GamePlan.Intelligence: Check import progress
-activate GamePlan.Api
+
 GamePlan.Intelligence -[#Green]> GamePlan.Intelligence.Api: No import in progress
+activate GamePlan.Api
 GamePlan.Intelligence.Api -[#Green]> GamePlan.Api: No import in progress
-GamePlan.Api -[#Green]> GamePlan.Api: Snapshot data
-GamePlan.Api -[#Green]> GamePlan.Api: Start Run
+GamePlan.Api -[#Green]> GamePlan.Api: Prepare/Pack run data
+GamePlan.Api -[#Green]>o GamePlan.Api: Start Run
 note right of "GamePlan.Api"
-Before starting Run the snapshot of the
-data which is necessary for run is made.
-So the Run won't be dependant on 
+Before starting the run the necessary
+data for run's execution is prepared and 
+packed. So the Run won't be dependant on 
 xgGamePlan's database.
 end note
 deactivate GamePlan.Api
@@ -54,19 +55,19 @@ GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import in progress
 activate GamePlan.Api
 GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Import in progress
 GamePlan.Api -[#Blue]> AirtimeManager: Try later or Schedule Run?
-AirtimeManager -[#Blue]>x GamePlan.Api: Try later
+AirtimeManager -[#Blue]>o GamePlan.Api: Try later
 AirtimeManager -[#Blue]> GamePlan.Api: Schedule Run
 GamePlan.Api -[#Blue]> GamePlan.Intelligence.Api: Subscribe to Import finished
 GamePlan.Intelligence.Api -[#Blue]> GamePlan.Intelligence: Subscribe to Import finished
 GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import finished event sent
 
 GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Import finished event sent
-GamePlan.Api -[#Blue]> GamePlan.Api: Snapshot data
-GamePlan.Api -[#Blue]> GamePlan.Api: Start Run
+GamePlan.Api -[#Blue]> GamePlan.Api: Prepare/Pack run data
+GamePlan.Api -[#Blue]>o GamePlan.Api: Start Run
 note right of "GamePlan.Api"
-Before starting Run the snapshot of the
-data which is necessary for run is made.
-So the Run won't be dependant on 
+Before starting the run the necessary
+data for run's execution is prepared and 
+packed. So the Run won't be dependant on 
 xgGamePlan's database.
 end note
 deactivate GamePlan.Api

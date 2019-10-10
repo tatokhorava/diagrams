@@ -29,25 +29,24 @@ GamePlan.Intelligence <[#Green]- GamePlan.Api: No Run in progress
 activate GamePlan.Intelligence #Green
 GamePlan.Intelligence -[#Green]>o GamePlan.DataBase: Update GamePlan database
 deactivate GamePlan.Intelligence
-note right of GamePlan.Intelligence
+note right of "GamePlan.Intelligence"
 If no Run in progress Intelligence executes handler and updates database.
 Also needed to set the flag to identify that data import is in progress.
 end note
 GamePlan.Intelligence <[#Blue]- GamePlan.Api: Run in progress
 activate GamePlan.Intelligence #Blue
-GamePlan.Intelligence -[#Blue]>o Intelligence.Storage: Save data
-GamePlan.Intelligence --[#Blue]> GamePlan.Api: Checking if Run completed
+GamePlan.Intelligence -[#Blue]>o GamePlan.Api: Subscribe to Run completed event
+GamePlan.Intelligence -[#Blue]>o Intelligence.Storage: Save data  to temporary storage
+
 note right of "GamePlan.Intelligence"
-Intelligence should be notified
-when Run is finished. Also starting
-new Runs should not be allowed as 
-the data is pending or runs should
-be scheduled until importing of data is finished.
+Intelligence should be notified when Run is finished.
+Also starting new Runs should not be allowed as the data
+is pending or runs should be scheduled until importing of data is finished.
 end note
-GamePlan.Api --[#Blue]> GamePlan.Intelligence: Run is completed
-GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
+GamePlan.Api --[#Blue]> GamePlan.Intelligence: Run is completed event received
+GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data from temporary storage
 GamePlan.Intelligence <-[#Blue] Intelligence.Storage: Return Data
-GamePlan.Intelligence -[#Blue]>o GamePlan.DataBase: Update GamePlan database
+GamePlan.Intelligence -[#Blue]>o GamePlan.DataBase: Execute handlers and update GamePlan database
 note right of "GamePlan.Intelligence"
 Intelligence executes handler and updates xgGamePlan database.
 Also needed to set the flag to identify that data import is in progress.
@@ -60,33 +59,39 @@ deactivate GamePlan.Intelligence
 AirtimeManager -> GamePlan.Api: Start Run
 GamePlan.Api -> GamePlan.Intelligence.Api: Check if import in progress or data is pending
 GamePlan.Intelligence.Api -> GamePlan.Intelligence: Check if import in progress
-GamePlan.Intelligence -> GamePlan.Intelligence.Api: Data up do date
+GamePlan.Intelligence -> GamePlan.Intelligence.Api: No import in progress
 activate GamePlan.Intelligence.Api #Green
-GamePlan.Intelligence.Api -> GamePlan.Api: No data pending or in progress
+GamePlan.Intelligence.Api -> GamePlan.Api: No data pending or import in progress
 GamePlan.Api -[#Green]>o GamePlan.Api: Run Started
 deactivate GamePlan.Intelligence.Api #Green
 
 
 activate GamePlan.Intelligence #Blue
-GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Check if import in progress
-GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
-note right of "GamePlan.Intelligence"
-If data is pending, the
-import start
-end note
-GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Import started
+' GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Check if import in progress
+' GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
+' note right of "GamePlan.Intelligence"
+' If data is pending, the
+' import start
+' end note
+' GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Import started
 GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import in progress
 GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Import in progress (passing back import Id)
 GamePlan.Api -[#Blue]> AirtimeManager: Try later or Schedule Run?
-note right of "GamePlan.Api"
-If run data will be changed is there any sense
-to schedule this run?
-end note
-GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Import finished
+AirtimeManager -[#Blue]>o GamePlan.Api: Try later
+AirtimeManager -[#Blue]> GamePlan.Api: Schedule Run
+GamePlan.Api -[#Blue]> GamePlan.Intelligence.Api: Subscribe to Import finished
+GamePlan.Intelligence.Api -[#Blue]> GamePlan.Intelligence: Subscribe to Import finished
+
 note right of "GamePlan.Intelligence"
 Notify to subscribers
 about completing import
 end note
+
+GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import finished event sent
+
+GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Import finished event sent
+GamePlan.Api -[#Blue]>o GamePlan.Api: Start Run
+
 deactivate GamePlan.Intelligence #Blue
 
 @enduml
