@@ -30,7 +30,8 @@ activate GamePlan.Intelligence #Green
 GamePlan.Intelligence -[#Green]>o GamePlan.DataBase: Update GamePlan database
 deactivate GamePlan.Intelligence
 note right of GamePlan.Intelligence
-If no Run in progress Intelligence executes handler and updates database
+If no Run in progress Intelligence executes handler and updates database.
+Also needed to set the flag to identify that data import is in progress.
 end note
 GamePlan.Intelligence <[#Blue]- GamePlan.Api: Run in progress
 activate GamePlan.Intelligence #Blue
@@ -47,6 +48,10 @@ GamePlan.Api --[#Blue]> GamePlan.Intelligence: Run is completed
 GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
 GamePlan.Intelligence <-[#Blue] Intelligence.Storage: Return Data
 GamePlan.Intelligence -[#Blue]>o GamePlan.DataBase: Update GamePlan database
+note right of GamePlan.Intelligence
+Intelligence executes handler and updates xgGamePlan database.
+Also needed to set the flag to identify that data import is in progress.
+end note
 deactivate GamePlan.Intelligence
 deactivate GamePlan.Intelligence
 
@@ -54,6 +59,34 @@ deactivate GamePlan.Intelligence
 
 AirtimeManager -> GamePlan.Api: Start Run
 GamePlan.Api -> GamePlan.Intelligence.Api: Check if import in progress or data is pending
+GamePlan.Intelligence.Api -> GamePlan.Intelligence: Check if import in progress
+GamePlan.Intelligence -> GamePlan.Intelligence.Api: Data up do date
+activate GamePlan.Intelligence.Api #Green
+GamePlan.Intelligence.Api -> GamePlan.Api: No data pending or in progress
+GamePlan.Api -[#Green]>o GamePlan.Api: Run Started
+deactivate GamePlan.Intelligence.Api #Green
 
+
+activate GamePlan.Intelligence #Blue
+GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Check if import in progress
+GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
+note right of GamePlan.Intelligence
+If data is pending, the
+import started
+end note
+GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Import started
+GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import in progress
+GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Import in progress (passing back import Id)
+GamePlan.Api -[#Blue]> AirtimeManager: Try later or Schedule Run?
+note right of GamePlan.Api
+If run data will be changed is there any sense
+to schedule this run?
+end note
+GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Import finished
+note right of GamePlan.Intelligence
+Notify to subscribers
+about completing import
+end note
+deactivate GamePlan.Intelligence #Blue
 
 @enduml

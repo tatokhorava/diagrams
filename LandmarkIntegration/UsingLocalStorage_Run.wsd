@@ -1,5 +1,8 @@
 @startuml
 title Landmark to xgGamePlan
-actor Landmark.User
+actor AirtimeManager
+participant GamePlan.Api
+participant GamePlan.Intelligence.Api
+
 
 @enduml
