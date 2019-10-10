@@ -1,0 +1,74 @@
+@startuml
+
+title Landmark to xgGamePlan
+actor Landmark.User
+database Landmark.PendingTables
+participant Landmark.Intelligence
+participant MessageBroker
+participant GamePlan.Intelligence
+participant GamePlan.Intelligence.Api
+participant GamePlan.Api
+database GamePlan.DataBase
+actor AirtimeManager
+
+Landmark.User -> Landmark.Intelligence: Start
+Landmark.Intelligence -> Landmark.PendingTables: Get data
+activate Landmark.PendingTables
+Landmark.PendingTables --> Landmark.Intelligence: Data returned
+deactivate Landmark.PendingTables
+Landmark.Intelligence -> MessageBroker: Publish/Send Messages
+GamePlan.Intelligence <- MessageBroker: Consuming data
+note right of MessageBroker
+Intelligence starts consuming 
+messages as soon as
+they arrive to the broker
+end note
+GamePlan.Intelligence ->o GamePlan.DataBase: Update GamePlan database
+
+note right of "GamePlan.Intelligence"
+In this case Intelligence stores data to
+xgGamePlan's database without checking 
+whether run is in progress or not
+end note
+
+== Airtime manager ==
+
+AirtimeManager -> GamePlan.Api: Start Run
+GamePlan.Api -> GamePlan.Intelligence.Api: Check if import in progress
+GamePlan.Intelligence.Api -> GamePlan.Intelligence: Check import progress
+activate GamePlan.Api
+GamePlan.Intelligence -[#Green]> GamePlan.Intelligence.Api: No import in progress
+GamePlan.Intelligence.Api -[#Green]> GamePlan.Api: No import in progress
+GamePlan.Api -[#Green]> GamePlan.Api: Snapshot data
+GamePlan.Api -[#Green]> GamePlan.Api: Start Run
+note right of "GamePlan.Api"
+Before starting Run the snapshot of the
+data which is necessary for run is made.
+So the Run won't be dependant on 
+xgGamePlan's database.
+end note
+deactivate GamePlan.Api
+
+GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import in progress
+
+activate GamePlan.Api
+GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Import in progress
+GamePlan.Api -[#Blue]> AirtimeManager: Try later or Schedule Run?
+AirtimeManager -[#Blue]>x GamePlan.Api: Try later
+AirtimeManager -[#Blue]> GamePlan.Api: Schedule Run
+GamePlan.Api -[#Blue]> GamePlan.Intelligence.Api: Subscribe to Import finished
+GamePlan.Intelligence.Api -[#Blue]> GamePlan.Intelligence: Subscribe to Import finished
+GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import finished event sent
+
+GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Start Run
+GamePlan.Api -[#Blue]> GamePlan.Api: Snapshot data
+GamePlan.Api -[#Blue]> GamePlan.Api: Start Run
+note right of "GamePlan.Api"
+Before starting Run the snapshot of the
+data which is necessary for run is made.
+So the Run won't be dependant on 
+xgGamePlan's database.
+end note
+deactivate GamePlan.Api
+
+@enduml

@@ -37,7 +37,7 @@ GamePlan.Intelligence <[#Blue]- GamePlan.Api: Run in progress
 activate GamePlan.Intelligence #Blue
 GamePlan.Intelligence -[#Blue]>o Intelligence.Storage: Save data
 GamePlan.Intelligence --[#Blue]> GamePlan.Api: Checking if Run completed
-note right of GamePlan.Intelligence
+note right of "GamePlan.Intelligence"
 Intelligence should be notified
 when Run is finished. Also starting
 new Runs should not be allowed as 
@@ -48,7 +48,7 @@ GamePlan.Api --[#Blue]> GamePlan.Intelligence: Run is completed
 GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
 GamePlan.Intelligence <-[#Blue] Intelligence.Storage: Return Data
 GamePlan.Intelligence -[#Blue]>o GamePlan.DataBase: Update GamePlan database
-note right of GamePlan.Intelligence
+note right of "GamePlan.Intelligence"
 Intelligence executes handler and updates xgGamePlan database.
 Also needed to set the flag to identify that data import is in progress.
 end note
@@ -70,7 +70,7 @@ deactivate GamePlan.Intelligence.Api #Green
 activate GamePlan.Intelligence #Blue
 GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Check if import in progress
 GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
-note right of GamePlan.Intelligence
+note right of "GamePlan.Intelligence"
 If data is pending, the
 import started
 end note
@@ -78,12 +78,12 @@ GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Import started
 GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import in progress
 GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Import in progress (passing back import Id)
 GamePlan.Api -[#Blue]> AirtimeManager: Try later or Schedule Run?
-note right of GamePlan.Api
+note right of "GamePlan.Api"
 If run data will be changed is there any sense
 to schedule this run?
 end note
 GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Import finished
-note right of GamePlan.Intelligence
+note right of "GamePlan.Intelligence"
 Notify to subscribers
 about completing import
 end note
