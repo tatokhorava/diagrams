@@ -1,0 +1,59 @@
+@startuml
+title Landmark to xgGamePlan
+actor Landmark.User
+database Landmark.PendingTables
+participant Landmark.Intelligence
+participant MessageBroker
+participant GamePlan.Intelligence
+participant GamePlan.Intelligence.Api
+database Intelligence.Storage
+participant GamePlan.Api
+database GamePlan.DataBase
+actor AirtimeManager
+
+Landmark.User -> Landmark.Intelligence: Start
+Landmark.Intelligence -> Landmark.PendingTables: Get data
+activate Landmark.PendingTables
+Landmark.PendingTables --> Landmark.Intelligence: Data returned
+deactivate Landmark.PendingTables
+Landmark.Intelligence -> MessageBroker: Publish/Send Messages
+GamePlan.Intelligence <- MessageBroker: Consuming data
+note right of MessageBroker
+Intelligence starts consuming 
+messages as soon as
+they arrive to the broker
+end note
+GamePlan.Intelligence -> GamePlan.Api: Check if Run in progress
+activate GamePlan.Intelligence
+GamePlan.Intelligence <[#Green]- GamePlan.Api: No Run in progress
+activate GamePlan.Intelligence #Green
+GamePlan.Intelligence -[#Green]>o GamePlan.DataBase: Update GamePlan database
+deactivate GamePlan.Intelligence
+note right of GamePlan.Intelligence
+If no Run in progress Intelligence executes handler and updates database
+end note
+GamePlan.Intelligence <[#Blue]- GamePlan.Api: Run in progress
+activate GamePlan.Intelligence #Blue
+GamePlan.Intelligence -[#Blue]>o Intelligence.Storage: Save data
+GamePlan.Intelligence --[#Blue]> GamePlan.Api: Checking if Run completed
+note right of GamePlan.Intelligence
+Intelligence should be notified
+when Run is finished. Also starting
+new Runs should not be allowed as 
+the data is pending or runs should
+be scheduled until importing of data is finished.
+end note
+GamePlan.Api --[#Blue]> GamePlan.Intelligence: Run is completed
+GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
+GamePlan.Intelligence <-[#Blue] Intelligence.Storage: Return Data
+GamePlan.Intelligence -[#Blue]>o GamePlan.DataBase: Update GamePlan database
+deactivate GamePlan.Intelligence
+deactivate GamePlan.Intelligence
+
+== Airtime manager ==
+
+AirtimeManager -> GamePlan.Api: Start Run
+GamePlan.Api -> GamePlan.Intelligence.Api: Check if import in progress or data is pending
+
+
+@enduml
