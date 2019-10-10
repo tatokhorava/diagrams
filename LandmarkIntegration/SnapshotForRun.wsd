@@ -60,7 +60,7 @@ GamePlan.Api -[#Blue]> GamePlan.Intelligence.Api: Subscribe to Import finished
 GamePlan.Intelligence.Api -[#Blue]> GamePlan.Intelligence: Subscribe to Import finished
 GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import finished event sent
 
-GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Start Run
+GamePlan.Intelligence.Api -[#Blue]> GamePlan.Api: Import finished event sent
 GamePlan.Api -[#Blue]> GamePlan.Api: Snapshot data
 GamePlan.Api -[#Blue]> GamePlan.Api: Start Run
 note right of "GamePlan.Api"

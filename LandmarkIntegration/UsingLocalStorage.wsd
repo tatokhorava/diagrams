@@ -72,7 +72,7 @@ GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Check if import in progre
 GamePlan.Intelligence -[#Blue]> Intelligence.Storage: Get Data
 note right of "GamePlan.Intelligence"
 If data is pending, the
-import started
+import start
 end note
 GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence: Import started
 GamePlan.Intelligence -[#Blue]> GamePlan.Intelligence.Api: Import in progress
